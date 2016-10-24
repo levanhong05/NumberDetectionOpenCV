@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <QApplication>
+#include <QDir>
 
 #include "config.h"
 #include "imageprocessor.h"
@@ -15,7 +16,6 @@ using namespace std;
 NumberDetection::NumberDetection(QObject *parent) :
     QObject(parent)
 {
-    _trainSamples = 3;
     _classes = 10;
 
     _pathImages = QApplication::applicationDirPath();
@@ -26,7 +26,7 @@ void NumberDetection::detectNumber()
     trainingFromImages();
     analyseImage();
 
-    exit(0);
+    //exit(0);
 }
 
 void NumberDetection::trainingFromImages()
@@ -44,20 +44,23 @@ void NumberDetection::trainingFromImages()
 
     Mat img;
     QString fileName;
-    for (int idx = 0; idx < _trainSamples; idx++) {
-        for (int i = 0; i < _classes; i++) {
-            fileName = _pathImages + "/training/" + QString::number(idx + 1) + "/" + QString::number(i) + ".png";
+
+    for (int i = 0; i < _classes; i++) {
+        QDir trainDir(_pathImages + "/training/" + QString::number(i));
+        trainDir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
+
+        QFileInfoList samples = trainDir.entryInfoList();
+
+        foreach (QFileInfo info, samples) {
+            fileName = info.absoluteFilePath();
 
             img = imread(fileName.toStdString(), 1);
 
-            if (!img.data) {
-                qDebug() << "File " << fileName << " not found";
-                exit(1);
+            if (img.data) {
+                proc->setInput(img);
+                proc->process();
+                key = ocr->learn(proc->getOutput(), i);
             }
-
-            proc->setInput(img);
-            proc->process();
-            key = ocr->learn(proc->getOutput());
         }
     }
 
@@ -86,7 +89,7 @@ void NumberDetection::analyseImage()
 
     qDebug() << "OCR training data loaded.\n";
 
-    Mat image = imread(QString(_pathImages + "/training/test4.png").toStdString(), 1);
+    Mat image = imread(QString(_pathImages + "/training/test2.png").toStdString(), 1);
 
     proc->setInput(image);
     proc->process();

@@ -16,27 +16,26 @@ KNearestOcr::~KNearestOcr()
     }
 }
 
-int KNearestOcr::learn(const Mat &img)
+int KNearestOcr::learn(const Mat &img, int value)
 {
-    imshow("Learn", img);
+    //imshow("Learn", img);
 
-    int key = waitKey(0);
+    //int key = waitKey(0);
 
-    if (key >= '0' && key <= '9') {
-        _responses.push_back(Mat(1, 1, CV_32F, (float) key - '0'));
+    //if (key >= '0' && key <= '9') {
+        _responses.push_back(Mat(1, 1, CV_32F, value));
         _samples.push_back(prepareSample(img));
-    }
+    //}
 
-    return key;
+    return value;
 }
 
-int KNearestOcr::learn(const vector<Mat> &images)
+int KNearestOcr::learn(const vector<Mat> &images, int value)
 {
     int key = 0;
 
-    for (vector<Mat>::const_iterator it = images.begin();
-            it < images.end() && key != 's' && key != 'q'; ++it) {
-        key = learn(*it);
+    for (vector<Mat>::const_iterator it = images.begin(); it < images.end(); ++it) {
+        key = learn(*it, value);
     }
 
     return key;
@@ -81,13 +80,15 @@ char KNearestOcr::recognize(const Mat &img)
         Mat results, neighborResponses, dists;
         float result = _pModel->find_nearest(prepareSample(img), 2, results, neighborResponses, dists);
 
-        if (0 == int(neighborResponses.at<float>(0, 0) - neighborResponses.at<float>(0, 1)) && dists.at<float>(0, 0) < _config->getOcrMaxDist()) {
-            // valid character if both neighbors have the same value and distance is below ocrMaxDist
-            cres = '0' + (int) result;
-        } else {
-            qDebug() << "OCR rejected: " << (int) result;
-            cres = '0' + (int) result;
-        }
+//        if (0 == int(neighborResponses.at<float>(0, 0) - neighborResponses.at<float>(0, 1)) && dists.at<float>(0, 0) < _config->getOcrMaxDist()) {
+//            // valid character if both neighbors have the same value and distance is below ocrMaxDist
+//            cres = '0' + (int) result;
+//        } else {
+//            qDebug() << "OCR rejected: " << (int) result;
+//            cres = '0' + (int) result;
+//        }
+        qDebug() << "OCR detected: " << (int) result;
+        cres = '0' + (int) result;
     } catch (std::exception &e) {
         qDebug() << e.what();
     }

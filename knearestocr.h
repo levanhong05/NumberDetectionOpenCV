@@ -23,8 +23,8 @@ public:
     KNearestOcr(Config *config);
     virtual ~KNearestOcr();
 
-    int learn(const Mat &img);
-    int learn(const vector<Mat> &images);
+    int learn(const Mat &img, int value);
+    int learn(const vector<Mat> &images, int value);
 
     void saveTrainingData();
     bool loadTrainingData();

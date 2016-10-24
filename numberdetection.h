@@ -21,7 +21,6 @@ public:
     void analyseImage();
 
 private:
-    int _trainSamples;
     int _classes;
 
     QString _pathImages;

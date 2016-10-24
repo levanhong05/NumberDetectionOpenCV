@@ -164,6 +164,7 @@ float ImageProcessor::detectSkew()
 Mat ImageProcessor::cannyEdges()
 {
     Mat edges;
+
     // detect edges
     Canny(_imgGray, edges, _config->getCannyThreshold1(), _config->getCannyThreshold2());
 
@@ -250,7 +251,7 @@ void ImageProcessor::findCounterDigits()
         _digits.push_back(img_ret(roi));
 
         if (_debugDigits) {
-            rectangle(_img, roi, Scalar(0, 255, 0), 2);
+            rectangle(_img, roi, Scalar(0, 0, 255), 2);
         }
     }
 }
