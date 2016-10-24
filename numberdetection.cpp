@@ -26,7 +26,7 @@ void NumberDetection::detectNumber()
     trainingFromImages();
     analyseImage();
 
-    //exit(0);
+    exit(0);
 }
 
 void NumberDetection::trainingFromImages()
@@ -75,7 +75,6 @@ void NumberDetection::analyseImage()
     ImageProcessor *proc = new ImageProcessor(config);
     proc->debugWindow();
     proc->debugDigits();
-    proc->debugSkew();
     proc->debugEdges();
 
     Plausi *plausi = new Plausi();
@@ -89,7 +88,12 @@ void NumberDetection::analyseImage()
 
     qDebug() << "OCR training data loaded.\n";
 
-    Mat image = imread(QString(_pathImages + "/training/test2.png").toStdString(), 1);
+    Mat image = imread(QString(_pathImages + "/training/test17.png").toStdString(), 1);
+
+    if (!image.data) {
+        qDebug() << "File test not found";
+        exit(0);
+    }
 
     proc->setInput(image);
     proc->process();
@@ -99,9 +103,7 @@ void NumberDetection::analyseImage()
 
     if (plausi->check(result)) {
         qDebug() << "  " << plausi->getCheckedValue();
-    } else {
-        qDebug() << "  -------";
     }
 
-    cv::waitKey(0);
+    waitKey(0);
 }

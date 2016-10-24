@@ -66,6 +66,11 @@ void ImageProcessor::process()
     // convert to gray
     cvtColor(_img, _imgGray, CV_BGR2GRAY);
 
+    //Mat blur;
+
+    //GaussianBlur(_imgGray, blur, Size(5, 5), 2, 2);
+    //adaptiveThreshold(blur, _imgGray, 255, 1, 1, 11, 2);
+
     // initial rotation to get the digits up
     rotate(_config->getRotationDegrees());
 
@@ -251,7 +256,7 @@ void ImageProcessor::findCounterDigits()
         _digits.push_back(img_ret(roi));
 
         if (_debugDigits) {
-            rectangle(_img, roi, Scalar(0, 0, 255), 2);
+            rectangle(_img, roi, Scalar(0, 0, 255), 1);
         }
     }
 }

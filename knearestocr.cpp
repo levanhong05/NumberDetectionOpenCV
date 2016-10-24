@@ -77,8 +77,7 @@ char KNearestOcr::recognize(const Mat &img)
             throw std::runtime_error("Model is not initialized");
         }
 
-        Mat results, neighborResponses, dists;
-        float result = _pModel->find_nearest(prepareSample(img), 2, results, neighborResponses, dists);
+        float result = _pModel->find_nearest(prepareSample(img), 2);
 
 //        if (0 == int(neighborResponses.at<float>(0, 0) - neighborResponses.at<float>(0, 1)) && dists.at<float>(0, 0) < _config->getOcrMaxDist()) {
 //            // valid character if both neighbors have the same value and distance is below ocrMaxDist
