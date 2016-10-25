@@ -168,10 +168,20 @@ float ImageProcessor::detectSkew()
 
 Mat ImageProcessor::cannyEdges()
 {
-    Mat edges;
+    Mat edges, destImage1, destImage2;
+
+    int size = 1;
+
+    Mat element = getStructuringElement(MORPH_RECT, Size(2 * size + 1, 2 * size + 1), Point(size, size));
+
+    // Apply the erosion operation
+    erode(_imgGray, destImage1, element);
+
+    // Apply the dilation operation
+    //dilate(_imgGray, destImage2, element);
 
     // detect edges
-    Canny(_imgGray, edges, _config->getCannyThreshold1(), _config->getCannyThreshold2());
+    Canny(destImage1, edges, _config->getCannyThreshold1(), _config->getCannyThreshold2(), 5);
 
     return edges;
 }
