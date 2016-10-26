@@ -14,6 +14,8 @@
 using namespace cv;
 using namespace std;
 
+#define min(a, b) (a > b ? b :a)
+
 class ImageProcessor
 {
 public:
@@ -29,6 +31,8 @@ public:
     void debugSkew(bool bval = true);
     void debugEdges(bool bval = true);
     void debugDigits(bool bval = true);
+    void detectDigits(bool bval = true);
+
     void showImage();
 
 private:
@@ -57,6 +61,8 @@ private:
     bool _debugSkew;
     bool _debugEdges;
     bool _debugDigits;
+
+    bool _detectDigits;
 };
 
 #endif // IMAGEPROCESSOR_H

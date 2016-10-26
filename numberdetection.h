@@ -20,6 +20,9 @@ public:
     void trainingFromImages();
     void analyseImage();
 
+public slots:
+    void analyseImage(Mat image);
+
 private:
     int _classes;
 

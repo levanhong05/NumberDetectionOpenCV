@@ -16,14 +16,16 @@ SOURCES +=  main.cpp \
             imageprocessor.cpp \
             config.cpp \
             knearestocr.cpp \
-    plausi.cpp
+    plausi.cpp \
+    videocaptures.cpp
 
 HEADERS += \
             numberdetection.h \
             imageprocessor.h \
             config.h \
             knearestocr.h \
-    plausi.h
+    plausi.h \
+    videocaptures.h
 
 win32 {
     INCLUDEPATH += "C:\\opencv2410\opencv\\build\\include" \

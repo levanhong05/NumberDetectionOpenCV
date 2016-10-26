@@ -14,7 +14,7 @@ public:
 ImageProcessor::ImageProcessor(Config *config) :
     _config(config), _debugWindow(false),
     _debugSkew(false), _debugDigits(false),
-    _debugEdges(false)
+    _debugEdges(false), _detectDigits(false)
 {
 }
 
@@ -52,6 +52,11 @@ void ImageProcessor::debugDigits(bool bval)
     _debugDigits = bval;
 }
 
+void ImageProcessor::detectDigits(bool bval)
+{
+    _detectDigits = bval;
+}
+
 void ImageProcessor::showImage()
 {
     imshow("ImageProcessor", _img);
@@ -66,7 +71,7 @@ void ImageProcessor::process()
     // convert to gray
     cvtColor(_img, _imgGray, CV_BGR2GRAY);
 
-    GaussianBlur(_imgGray, _imgGray, Size(5,5), 2, 2);
+    GaussianBlur(_imgGray, _imgGray, Size(5, 5), 2, 2);
     adaptiveThreshold(_imgGray, _imgGray, 255, 1, 1, 11, 2);
 
     // initial rotation to get the digits up
@@ -239,6 +244,50 @@ void ImageProcessor::findCounterDigits()
 
         if (tmpRes.size() > alignedBoundingBoxes.size()) {
             alignedBoundingBoxes = tmpRes;
+        }
+    }
+
+    if (_detectDigits) {
+        vector<Rect> temp;
+
+        for (vector<Rect>::const_iterator ib = boundingBoxes.begin(); ib != boundingBoxes.end(); ++ib) {
+            if (std::find(alignedBoundingBoxes.begin(), alignedBoundingBoxes.end(), (*ib)) == alignedBoundingBoxes.end()) {
+                temp.push_back(*ib);
+            }
+        }
+
+        if (temp.size() == 1) {
+            alignedBoundingBoxes.push_back(temp[0]);
+        } else {
+            for (int i = 0; i < temp.size() - 1; ++i) {
+                for (int j = 1; j < temp.size(); ++j) {
+                    if (abs(temp[i].width - temp[j].width) <= 30) {
+                        Rect rect;
+
+                        if (temp[i].x > temp[j].x) {
+                            rect.x = temp[j].x;
+                        } else {
+                            rect.x = temp[i].x;
+                        }
+
+                        if (temp[i].x > temp[j].x) {
+                            rect.y = temp[j].y;
+                        } else {
+                            rect.y = temp[i].y;
+                        }
+
+                        if (temp[i].width > temp[j].width) {
+                            rect.width = temp[i].width;
+                        } else {
+                            rect.width = temp[j].width;
+                        }
+
+                        rect.height = temp[j].height + temp[j].height;
+
+                        alignedBoundingBoxes.push_back(rect);
+                    }
+                }
+            }
         }
     }
 

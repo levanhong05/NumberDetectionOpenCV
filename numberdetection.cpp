@@ -90,6 +90,49 @@ void NumberDetection::analyseImage()
 
     Mat image = imread(QString(_pathImages + "/training/test1.png").toStdString(), 1);
 
+    proc->detectDigits();
+
+    if (!image.data) {
+        qDebug() << "File test not found";
+        exit(0);
+    }
+
+    proc->setInput(image);
+    proc->process();
+    QString result = ocr->recognize(proc->getOutput());
+
+    qDebug() << "Number decteted: " << result;
+
+    if (plausi->check(result)) {
+        qDebug() << "  " << plausi->getCheckedValue();
+    }
+
+    waitKey(0);
+}
+
+void NumberDetection::analyseImage(Mat image)
+{
+    Config *config = new Config();
+    config->loadConfig();
+
+    ImageProcessor *proc = new ImageProcessor(config);
+    proc->debugWindow();
+    proc->debugDigits();
+    proc->debugEdges();
+
+    Plausi *plausi = new Plausi();
+
+    KNearestOcr *ocr = new KNearestOcr(config);
+
+    if (!ocr->loadTrainingData()) {
+        qDebug() << "Failed to load OCR training data\n";
+        return;
+    }
+
+    qDebug() << "OCR training data loaded.\n";
+
+    proc->detectDigits();
+
     if (!image.data) {
         qDebug() << "File test not found";
         exit(0);
