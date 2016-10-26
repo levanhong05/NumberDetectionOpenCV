@@ -88,7 +88,7 @@ void NumberDetection::analyseImage()
 
     qDebug() << "OCR training data loaded.\n";
 
-    Mat image = imread(QString(_pathImages + "/training/test5.png").toStdString(), 1);
+    Mat image = imread(QString(_pathImages + "/training/test1.png").toStdString(), 1);
 
     if (!image.data) {
         qDebug() << "File test not found";

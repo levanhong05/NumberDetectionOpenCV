@@ -66,10 +66,8 @@ void ImageProcessor::process()
     // convert to gray
     cvtColor(_img, _imgGray, CV_BGR2GRAY);
 
-    //Mat blur;
-
-    //GaussianBlur(_imgGray, blur, Size(5, 5), 2, 2);
-    //adaptiveThreshold(blur, _imgGray, 255, 1, 1, 11, 2);
+    GaussianBlur(_imgGray, _imgGray, Size(5,5), 2, 2);
+    adaptiveThreshold(_imgGray, _imgGray, 255, 1, 1, 11, 2);
 
     // initial rotation to get the digits up
     rotate(_config->getRotationDegrees());
@@ -168,20 +166,17 @@ float ImageProcessor::detectSkew()
 
 Mat ImageProcessor::cannyEdges()
 {
-    Mat edges, destImage1, destImage2;
+    Mat edges, destImage;
 
-    int size = 1;
+    int size = 2;
 
     Mat element = getStructuringElement(MORPH_RECT, Size(2 * size + 1, 2 * size + 1), Point(size, size));
 
-    // Apply the erosion operation
-    erode(_imgGray, destImage1, element);
-
     // Apply the dilation operation
-    //dilate(_imgGray, destImage2, element);
+    dilate(_imgGray, destImage, element);
 
     // detect edges
-    Canny(destImage1, edges, _config->getCannyThreshold1(), _config->getCannyThreshold2(), 5);
+    Canny(destImage, edges, _config->getCannyThreshold1(), _config->getCannyThreshold2(), 5);
 
     return edges;
 }

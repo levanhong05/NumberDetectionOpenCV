@@ -18,14 +18,8 @@ KNearestOcr::~KNearestOcr()
 
 int KNearestOcr::learn(const Mat &img, int value)
 {
-    //imshow("Learn", img);
-
-    //int key = waitKey(0);
-
-    //if (key >= '0' && key <= '9') {
-        _responses.push_back(Mat(1, 1, CV_32F, value));
-        _samples.push_back(prepareSample(img));
-    //}
+    _responses.push_back(Mat(1, 1, CV_32F, value));
+    _samples.push_back(prepareSample(img));
 
     return value;
 }
@@ -77,15 +71,14 @@ char KNearestOcr::recognize(const Mat &img)
             throw std::runtime_error("Model is not initialized");
         }
 
-        float result = _pModel->find_nearest(prepareSample(img), 2);
+        Mat results, neighborResponses, dists;
 
-//        if (0 == int(neighborResponses.at<float>(0, 0) - neighborResponses.at<float>(0, 1)) && dists.at<float>(0, 0) < _config->getOcrMaxDist()) {
-//            // valid character if both neighbors have the same value and distance is below ocrMaxDist
-//            cres = '0' + (int) result;
-//        } else {
-//            qDebug() << "OCR rejected: " << (int) result;
-//            cres = '0' + (int) result;
-//        }
+        float result = _pModel->find_nearest(prepareSample(img), 2, results, neighborResponses, dists);
+
+        if (0 == int(neighborResponses.at<float>(0, 0) - neighborResponses.at<float>(0, 1)) && dists.at<float>(0, 0) < _config->getOcrMaxDist()) {
+            //cres = '0' + (int) result;
+        }
+
         qDebug() << "OCR detected: " << (int) result;
         cres = '0' + (int) result;
     } catch (std::exception &e) {
@@ -109,8 +102,10 @@ QString KNearestOcr::recognize(const vector<Mat> &images)
 Mat KNearestOcr::prepareSample(const Mat &img)
 {
     Mat roi, sample;
-    resize(img, roi, Size(10, 10));
+    resize(img, roi, Size(10,10));
+
     roi.reshape(1, 1).convertTo(sample, CV_32F);
+
     return sample;
 }
 
