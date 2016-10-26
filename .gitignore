@@ -1,2 +1,5 @@
 *.user
 image
+/training/*.jpeg
+/training/*.jpg
+/training/*.png
