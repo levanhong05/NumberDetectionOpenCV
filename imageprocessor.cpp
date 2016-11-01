@@ -247,49 +247,49 @@ void ImageProcessor::findCounterDigits()
         }
     }
 
-    if (_detectDigits) {
-        vector<Rect> temp;
+//    if (_detectDigits) {
+//        vector<Rect> temp;
 
-        for (vector<Rect>::const_iterator ib = boundingBoxes.begin(); ib != boundingBoxes.end(); ++ib) {
-            if (std::find(alignedBoundingBoxes.begin(), alignedBoundingBoxes.end(), (*ib)) == alignedBoundingBoxes.end()) {
-                temp.push_back(*ib);
-            }
-        }
+//        for (vector<Rect>::const_iterator ib = boundingBoxes.begin(); ib != boundingBoxes.end(); ++ib) {
+//            if (std::find(alignedBoundingBoxes.begin(), alignedBoundingBoxes.end(), (*ib)) == alignedBoundingBoxes.end()) {
+//                temp.push_back(*ib);
+//            }
+//        }
 
-        if (temp.size() == 1) {
-            alignedBoundingBoxes.push_back(temp[0]);
-        } else {
-            for (int i = 0; i < temp.size() - 1; ++i) {
-                for (int j = 1; j < temp.size(); ++j) {
-                    if (abs(temp[i].width - temp[j].width) <= 30) {
-                        Rect rect;
+//        if (temp.size() == 1) {
+//            alignedBoundingBoxes.push_back(temp[0]);
+//        } else {
+//            for (int i = 0; i < temp.size() - 1; ++i) {
+//                for (int j = 1; j < temp.size(); ++j) {
+//                    if (abs(temp[i].width - temp[j].width) <= 30) {
+//                        Rect rect;
 
-                        if (temp[i].x > temp[j].x) {
-                            rect.x = temp[j].x;
-                        } else {
-                            rect.x = temp[i].x;
-                        }
+//                        if (temp[i].x > temp[j].x) {
+//                            rect.x = temp[j].x;
+//                        } else {
+//                            rect.x = temp[i].x;
+//                        }
 
-                        if (temp[i].x > temp[j].x) {
-                            rect.y = temp[j].y;
-                        } else {
-                            rect.y = temp[i].y;
-                        }
+//                        if (temp[i].x > temp[j].x) {
+//                            rect.y = temp[j].y;
+//                        } else {
+//                            rect.y = temp[i].y;
+//                        }
 
-                        if (temp[i].width > temp[j].width) {
-                            rect.width = temp[i].width;
-                        } else {
-                            rect.width = temp[j].width;
-                        }
+//                        if (temp[i].width > temp[j].width) {
+//                            rect.width = temp[i].width;
+//                        } else {
+//                            rect.width = temp[j].width;
+//                        }
 
-                        rect.height = temp[j].height + temp[j].height;
+//                        rect.height = temp[j].height + temp[j].height;
 
-                        alignedBoundingBoxes.push_back(rect);
-                    }
-                }
-            }
-        }
-    }
+//                        alignedBoundingBoxes.push_back(rect);
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     qDebug() << "max number of alignedBoxes: " << alignedBoundingBoxes.size();
 
@@ -307,7 +307,11 @@ void ImageProcessor::findCounterDigits()
     // cut out found rectangles from edged image
     for (int i = 0; i < alignedBoundingBoxes.size(); ++i) {
         Rect roi = alignedBoundingBoxes[i];
-        _digits.push_back(img_ret(roi));
+        try {
+            _digits.push_back(img_ret(roi));
+        } catch (std::exception &e) {
+            qDebug() << e.what();
+        }
 
         if (_debugDigits) {
             rectangle(_img, roi, Scalar(0, 0, 255), 1);

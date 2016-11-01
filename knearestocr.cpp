@@ -18,6 +18,8 @@ KNearestOcr::~KNearestOcr()
 
 int KNearestOcr::learn(const Mat &img, int value)
 {
+    imshow("Lear", img);
+
     _responses.push_back(Mat(1, 1, CV_32F, value));
     _samples.push_back(prepareSample(img));
 
@@ -77,9 +79,12 @@ char KNearestOcr::recognize(const Mat &img)
 
         if (0 == int(neighborResponses.at<float>(0, 0) - neighborResponses.at<float>(0, 1)) && dists.at<float>(0, 0) < _config->getOcrMaxDist()) {
             //cres = '0' + (int) result;
+        } else {
+
         }
 
         qDebug() << "OCR detected: " << (int) result;
+
         cres = '0' + (int) result;
     } catch (std::exception &e) {
         qDebug() << e.what();
@@ -102,7 +107,7 @@ QString KNearestOcr::recognize(const vector<Mat> &images)
 Mat KNearestOcr::prepareSample(const Mat &img)
 {
     Mat roi, sample;
-    resize(img, roi, Size(10,10));
+    resize(img, roi, Size(10, 10));
 
     roi.reshape(1, 1).convertTo(sample, CV_32F);
 

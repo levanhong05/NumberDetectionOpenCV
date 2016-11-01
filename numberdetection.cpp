@@ -88,7 +88,7 @@ void NumberDetection::analyseImage()
 
     qDebug() << "OCR training data loaded.\n";
 
-    Mat image = imread(QString(_pathImages + "/training/test1.png").toStdString(), 1);
+    Mat image = imread(QString(_pathImages + "/training/test.png").toStdString(), 1);
 
     proc->detectDigits();
 
@@ -100,6 +100,21 @@ void NumberDetection::analyseImage()
     proc->setInput(image);
     proc->process();
     QString result = ocr->recognize(proc->getOutput());
+
+    if (result.length() <= 3) {
+        while (result.length() < 3) {
+            result.append("0");
+        }
+
+        result.prepend("0.");
+    } else if (result.length() > 6) {
+        qDebug() << "Wrong detect";
+    } else {
+        QString decimal = result.right(3);
+        QString value = result.mid(0, result.length() - 3);
+
+        result = value + "." + decimal;
+    }
 
     qDebug() << "Number decteted: " << result;
 
@@ -132,6 +147,9 @@ void NumberDetection::analyseImage(Mat image)
     qDebug() << "OCR training data loaded.\n";
 
     proc->detectDigits();
+
+    //resizing
+    resize(image, image, Size(300,500));
 
     if (!image.data) {
         qDebug() << "File test not found";
